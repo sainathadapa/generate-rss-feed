@@ -89,6 +89,7 @@ tz = pytz.timezone('Asia/Kolkata')
 for url, title, selftext, timestamp in zip(for_feed.url, for_feed.title, for_feed.selftext, for_feed.utc_time):
     fe = fg.add_entry()
     fe.id(url)
+    fe.link({"href": url})
     fe.title(title)
     fe.content(content=selftext, type = 'html')
     fe.published(tz.localize(datetime.datetime.fromtimestamp(timestamp)))
