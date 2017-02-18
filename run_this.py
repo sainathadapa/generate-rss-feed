@@ -37,7 +37,7 @@ times = []
 
 # going through each subreddit top list and getting the entries
 for this_subreddit, this_type in zip(subreddit_list, subreddit_top_type):
-    for submission in reddit.subreddit(this_subreddit).top(this_type):
+    for submission in reddit.subreddit(this_subreddit).top(this_type, limit = 10):
         urls.append(submission.url)
         titles.append(submission.title)
         selftexts.append(submission.selftext)
