@@ -8,6 +8,8 @@ import datetime
 import pytz
 import feedparser
 import re
+from hackernews import HackerNews
+
 
 # list of subreddits and the corresponding top page from which to take the entries from
 subreddit_list =     ['orgmode', 'i3wm']
@@ -23,23 +25,23 @@ feed_url = 'https://example.com/atom.xml'
 # Location to where the generated feed is going to be saved
 feed_path = './atom.xml'
 
-# reddit api inputs
-reddit = praw.Reddit(client_id='',
-                     client_secret='',
-                     password='',
-                     user_agent='testscript by /u/fakebot3',
-                     username='')
-
+# initializing
 urls = []
 titles = []
 selftexts = []
 times = []
 
 # going through each subreddit top list and getting the entries
+reddit = praw.Reddit(client_id='',
+                     client_secret='',
+                     password='',
+                     user_agent='testscript by /u/fakebot3',
+                     username='')
+
 for this_subreddit, this_type in zip(subreddit_list, subreddit_top_type):
     for submission in reddit.subreddit(this_subreddit).top(this_type, limit = 10):
-        urls.append(submission.url)
-        titles.append(submission.title)
+        urls.append('https://www.reddit.com' + submission.permalink)
+        titles.append(this_subreddit + ' - ' + submission.title)
         selftexts.append(submission.selftext)
         times.append(submission.created_utc)
 
@@ -52,6 +54,17 @@ for one_feed in feed_links:
         titles.append(one_entry.title)
         selftexts.append(one_entry.description)
         times.append(datetime.datetime.strptime(one_entry.published, '%a, %d %b %Y %H:%M:%S %Z').timestamp())
+        
+# going through the top hacker news items
+hn = HackerNews()
+
+for story_id in hn.top_stories(limit=20):
+    one_item = hn.get_item(story_id)
+    urls.append('https://news.ycombinator.com/item?id=' + str(one_item.item_id))
+    titles.append(one_item.title)
+    selftexts.append('')
+    times.append(one_item.submission_time.timestamp())
+    
 
 new_data = pd.DataFrame({
     'url' : urls,
@@ -71,6 +84,7 @@ else:
 # keeping only the latest 100 entries for the feed
 full_data = full_data.sort_values(by='utc_time',ascending=False)
 full_data = full_data.drop_duplicates(subset='url', keep='first')
+full_data = full_data.sort_values(by='utc_time',ascending=False)
 for_feed  = full_data.head(n=100)
 
 # generating feed
