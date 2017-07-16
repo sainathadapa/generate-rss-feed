@@ -2,6 +2,7 @@
 import praw
 from feedgen.feed import FeedGenerator
 import pandas as pd
+import numpy as np
 import html
 import os
 import datetime
@@ -43,7 +44,6 @@ for this_subreddit, this_type in zip(subreddit_list, subreddit_top_type):
         urls.append('https://www.reddit.com' + submission.permalink)
         titles.append(this_subreddit + ' - ' + submission.title)
         selftexts.append(submission.selftext)
-        times.append(submission.created_utc)
 
 # going through each feed and getting the entries
 pattern = re.compile("=(.*)$")
@@ -53,8 +53,7 @@ for one_feed in feed_links:
         urls.append(pattern.search(one_entry.id).group(1))
         titles.append(one_entry.title)
         selftexts.append(one_entry.description)
-        times.append(datetime.datetime.strptime(one_entry.published, '%a, %d %b %Y %H:%M:%S %Z').timestamp())
-        
+
 # going through the top hacker news items
 hn = HackerNews()
 
@@ -62,30 +61,31 @@ for story_id in hn.top_stories(limit=20):
     one_item = hn.get_item(story_id)
     urls.append('https://news.ycombinator.com/item?id=' + str(one_item.item_id))
     titles.append(one_item.title)
-    selftexts.append('')
-    times.append(one_item.submission_time.timestamp())
+    selftexts.append('Article from HackerNews')
     
 
 new_data = pd.DataFrame({
     'url' : urls,
     'title' : titles,
     'selftext' : selftexts,
-    'utc_time': times
+    'time': datetime.datetime.now()
 })
+
+new_data = new_data.drop_duplicates(subset='url', keep='first')
 
 # loading cache and appending new data to that
 if os.path.isfile(cache_path):
     old_data = pd.read_pickle(cache_path)
+    new_urls = np.setdiff1d(new_data.url.values, old_data.url.values)
+    new_data = new_data[new_data['url'].isin(new_urls)]
     full_data = old_data.append(new_data)
 else:
     full_data = new_data
 
-# sorting and droppping duplicates
-# keeping only the latest 100 entries for the feed
-full_data = full_data.sort_values(by='utc_time',ascending=False)
-full_data = full_data.drop_duplicates(subset='url', keep='first')
-full_data = full_data.sort_values(by='utc_time',ascending=False)
-for_feed  = full_data.head(n=100)
+# sorting
+# keeping only the latest 200 entries for the feed
+full_data = full_data.sort_values(by='time',ascending=False)
+for_feed  = full_data.head(n=200)
 
 # generating feed
 fg = FeedGenerator()
@@ -100,14 +100,14 @@ fg.language('en')
 
 tz = pytz.timezone('Asia/Kolkata')
 
-for url, title, selftext, timestamp in zip(for_feed.url, for_feed.title, for_feed.selftext, for_feed.utc_time):
+for url, title, selftext, timestamp in zip(for_feed.url, for_feed.title, for_feed.selftext, for_feed.time):
     fe = fg.add_entry()
     fe.id(url)
     fe.link({"href": url})
     fe.title(title)
     fe.content(content=selftext, type = 'html')
-    fe.published(tz.localize(datetime.datetime.fromtimestamp(timestamp)))
-    fe.updated(tz.localize(datetime.datetime.fromtimestamp(timestamp)))
+    fe.published(tz.localize(timestamp))
+    fe.updated(tz.localize(timestamp))
 
 # saving the feed
 fg.atom_file(feed_path)
