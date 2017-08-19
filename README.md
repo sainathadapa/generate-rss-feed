@@ -1,1 +1,4 @@
-This script creates a consolidated Atom feed from specified subreddits and other RSS/Atom feeds, ensuring that duplicate entries are not present.
+Generates a Atom feed from:
+- top posts of specified subreddits
+- posts from other rss feeds
+- top posts from HackerNews
