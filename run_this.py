@@ -32,18 +32,28 @@ titles = []
 selftexts = []
 times = []
 
-# going through each subreddit top list and getting the entries
+# reddit credentials
 reddit = praw.Reddit(client_id='',
                      client_secret='',
                      password='',
                      user_agent='testscript by /u/fakebot3',
                      username='')
 
+# going through each subreddit top list and getting the entries
 for this_subreddit, this_type in zip(subreddit_list, subreddit_top_type):
     for submission in reddit.subreddit(this_subreddit).top(this_type, limit = 10):
-        urls.append('https://www.reddit.com' + submission.permalink)
-        titles.append(this_subreddit + ' - ' + submission.title)
-        selftexts.append(submission.selftext)
+        if submission.num_comments > 2:
+            urls.append('https://www.reddit.com' + submission.permalink)
+            titles.append(this_subreddit + ' - ' + submission.title)
+            selftexts.append(submission.selftext)
+
+# getting stickied posts
+for this_subreddit in subreddit_list:
+    for submission in reddit.subreddit(this_subreddit).hot(limit = 5):
+        if submission.stickied and submission.num_comments > 2:
+            urls.append('https://www.reddit.com' + submission.permalink)
+            titles.append(this_subreddit + ' - ' + submission.title)
+            selftexts.append(submission.selftext)
 
 # going through each feed and getting the entries
 pattern = re.compile("=(.*)$")
@@ -57,11 +67,12 @@ for one_feed in feed_links:
 # going through the top hacker news items
 hn = HackerNews()
 
-for story_id in hn.top_stories(limit=20):
+for story_id in hn.top_stories(limit=5):
     one_item = hn.get_item(story_id)
-    urls.append('https://news.ycombinator.com/item?id=' + str(one_item.item_id))
-    titles.append(one_item.title)
-    selftexts.append('Article from HackerNews')
+    if one_item.descendants >= 10:
+        urls.append('https://news.ycombinator.com/item?id=' + str(one_item.item_id))
+        titles.append(one_item.title)
+        selftexts.append('Article from HackerNews')
     
 
 new_data = pd.DataFrame({
@@ -116,5 +127,3 @@ fg.atom_file(feed_path)
 full_data.to_pickle(cache_path)
 
 print('ran successfully at ' + str(datetime.datetime.now()))
-
-
