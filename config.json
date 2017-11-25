@@ -1,0 +1,28 @@
+{
+  "subreddits": {
+    "orgmode":          "week",
+    "vim":              "week",
+    "neovim":           "week",
+    "MapPorn":          "month",
+  },
+  "reddit_credentials": {
+    "client_id":     "",
+    "client_secret": "",
+    "password":      "",
+    "username":      ""
+  },
+  "reddit_min_comments": 5,
+  "reddit_num_posts":    10,
+
+  "feed_sources": [
+    "http://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&q=India&output=rss"
+  ],
+
+  "add_hn_entries": true,
+  "hn_num_posts":   5,
+  
+  "max_items_feed": 100,
+  "cache_path":     "cache.pkl",
+  "feed_url":       "https://some-filesharing-site.com/location.xml",
+  "save_path":      "generated_feed.xml"
+}
