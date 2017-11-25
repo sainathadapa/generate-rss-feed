@@ -12,11 +12,11 @@ Directly adding Sub-Reddits, HackerNews or Google News in Feedly, do not solve t
 
 Instructions:
 1. Install the following python modules:
-  - praw
-  - feedgen
-  - hackernews-python
-  - numpy
-  - pandas
-  - tzlocal
+   - praw
+   - feedgen
+   - hackernews-python
+   - numpy
+   - pandas
+   - tzlocal
 2. Edit the config file (Description of the config file below)
 3. Run the script periodically, by adding to cron
