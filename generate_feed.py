@@ -102,7 +102,7 @@ for_feed  = full_data.head(n=config['max_items_feed'])
 # Generate feed
 fg = FeedGenerator()
 fg.id(config['save_path'])
-fg.title('Aggregated Feed')
+fg.title(config['feed_name'])
 fg.link(href=config['feed_url'], rel='self')
 fg.language('en')
 
