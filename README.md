@@ -3,14 +3,16 @@ The python script in this repository generates a Atom feed with
 - Top posts from HackerNews
 - Posts from other RSS/Atom feeds
 
+--------
 
 Reasons for writing this script:
 1. Want to use Feedly as a single point for browsing through 'interesting' posts
 2. Do not want to look at posts in Reddit/HackerNews which have zero comments
 3. Do not want to look at posts which I have already seen (This happens with Google News feeds. If a particular topic does not have new news stories frequently, I keep seeing the same new stories again and again).
 
-Directly adding Sub-Reddits, HackerNews or Google News in Feedly, do not solve the issue of not wanting to see the zero comments posts, or repeated posts. Hence wrote a simple script to achieve my goals.
+Directly adding Sub-Reddits, HackerNews or Google News in Feedly, does not solve the issue of not wanting to see the zero comments posts, or repeated posts. Hence wrote a simple script to achieve my goals.
 
+---------
 
 Instructions:
 1. Install the following python modules:
@@ -24,6 +26,7 @@ Instructions:
 3. Run the script by invoking the command `python3 generate_feed.py config.json`
 4. Run the script periodically, by adding to cron
 
+--------
 
 Config file description:
 - `subreddits` : Specify the list of subreddits from which to gather the posts. Each element here is a key-value paid, with key being the subreddit name, and the value being the time filter that needs to be used (all, day, hour, month, week, year).
