@@ -29,7 +29,7 @@ Instructions:
 --------
 
 Config file description:
-- `subreddits` : Specify the list of subreddits from which to gather the posts. Each element here is a key-value paid, with key being the subreddit name, and the value being the time filter that needs to be used (all, day, hour, month, week, year).
+- `subreddits` : Specify the list of subreddits from which to gather the posts. Each element here is a key-value pair, with the key being the subreddit name, and the value being the time filter that needs to be used (all, day, hour, month, week, year).
 - `reddit_credentials`: Specify the reddit access credentials. Look [here](https://praw.readthedocs.io/en/latest/getting_started/authentication.html) to know how to acquire access codes.
 - `reddit_min_comments`: Only add posts with the number of comments greater than this value.
 - `reddit_num_posts`: Number of posts to gather from each subreddit
