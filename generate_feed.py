@@ -1,8 +1,8 @@
 import json
-import praw                            # to connect to reddit
-from feedgen.feed import FeedGenerator # to generate the feed
-from hackernews import HackerNews      # to get entries from hackernews
-import feedparser                      # to parse feeds
+import praw                             # to connect to reddit
+from feedgen.feed import FeedGenerator  # to generate the feed
+from hackernews import HackerNews       # to get entries from hackernews
+import feedparser                       # to parse feeds
 import numpy as np
 import pandas as pd
 from os.path import isfile
@@ -17,10 +17,10 @@ if len(argv) < 2:
 with open(argv[1]) as json_data:
     config = json.load(json_data)
 
-urls      = []
-titles    = []
+urls = []
+titles = []
 selftexts = []
-times     = []
+times = []
 
 # Go through subreddits list and get top/stickied posts
 if len(config['subreddits']) > 0:
@@ -33,13 +33,13 @@ if len(config['subreddits']) > 0:
                          user_agent='feed generator',
                          username=reddit_credentials['username'])
 
-    subreddits   = config['subreddits']
+    subreddits = config['subreddits']
     min_comments = config['reddit_min_comments']
-    num_posts    = config['reddit_num_posts']
+    num_posts = config['reddit_num_posts']
 
     # Get top posts
     for subreddit in subreddits:
-        for submission in reddit.subreddit(subreddit).top(subreddits[subreddit], limit = num_posts):
+        for submission in reddit.subreddit(subreddit).top(subreddits[subreddit], limit=num_posts):
             if submission.num_comments > min_comments:
                 urls.append('https://www.reddit.com' + submission.permalink)
                 titles.append(subreddit + ' - ' + submission.title)
@@ -47,7 +47,7 @@ if len(config['subreddits']) > 0:
 
     # Get stickied posts
     for subreddit in subreddits:
-        for submission in reddit.subreddit(subreddit).hot(limit = 10):
+        for submission in reddit.subreddit(subreddit).hot(limit=10):
             if submission.stickied and submission.num_comments > min_comments:
                 urls.append('https://www.reddit.com' + submission.permalink)
                 titles.append(subreddit + ' - ' + submission.title)
@@ -70,7 +70,7 @@ if config['add_hn_entries']:
     num_posts = config['hn_num_posts']
     for story_id in hn.top_stories(limit=num_posts):
         one_item = hn.get_item(story_id)
-        if one_item.descendants >= 10:
+        if one_item.item_type in ['poll', 'story'] and one_item.descendants >= 10:
             urls.append('https://news.ycombinator.com/item?id=' + str(one_item.item_id))
             titles.append(one_item.title)
             selftexts.append('Article from HackerNews')
@@ -96,8 +96,8 @@ else:
     full_data = new_data
 
 # Keep only the latest n entries for the feed
-full_data = full_data.sort_values(by='time',ascending=False)
-for_feed  = full_data.head(n=config['max_items_feed'])
+full_data = full_data.sort_values(by='time', ascending=False)
+for_feed = full_data.head(n=config['max_items_feed'])
 
 # Generate feed
 fg = FeedGenerator()
@@ -113,7 +113,7 @@ for url, title, selftext, timestamp in zip(for_feed.url, for_feed.title, for_fee
     fe.id(url)
     fe.link({"href": url})
     fe.title(title)
-    fe.content(content=selftext, type = 'html')
+    fe.content(content=selftext, type='html')
     fe.published(tz.localize(timestamp))
     fe.updated(tz.localize(timestamp))
 
@@ -124,5 +124,3 @@ fg.atom_file(config['save_path'])
 full_data.to_pickle(config['cache_path'])
 
 print('ran successfully at ' + str(datetime.now()))
-
-

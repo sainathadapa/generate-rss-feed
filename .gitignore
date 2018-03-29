@@ -3,8 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-main.py
-status.txt
 *.pkl
-crontab.txt
-
+.env
+*.txt
+*.log
