@@ -1,6 +1,6 @@
 certifi==2018.1.18
 chardet==3.0.4
-feedgen==0.6.1
+feedgen==0.9.0
 feedparser==5.2.1
 haxor==0.6
 idna==2.6
